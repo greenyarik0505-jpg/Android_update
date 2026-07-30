@@ -1,0 +1,30 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for docker emulation)
+        uses: docker/setup-qemu-action@v2
+
+      - name: Build APK with Buildozer (Docker)
+        env:
+          HOME: /github/home
+        run: |
+          docker run --rm -v "${{ github.workspace }}":/home/user/hostproject -w /home/user/hostproject/android kivy/buildozer:cp37-none-linux_x86_64 /bin/bash -lc "pip install --upgrade buildozer && buildozer android debug"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/bin
+
