@@ -24,11 +24,12 @@ jobs:
         env:
           HOME: /github/home
         run: |
-          # Run Buildozer inside the official Kivy Buildozer image (latest)
-          # It mounts the whole repository into the container and uses the android/ folder as project dir.
+          # Run Buildozer inside the official Kivy Buildozer image (latest).
+          # Mount repository and run buildozer in android/ directory.
           docker run --rm -v "${{ github.workspace }}":/home/user/hostproject -w /home/user/hostproject/android kivy/buildozer:latest /bin/bash -lc "\
             pip install --upgrade buildozer && \
-            buildozer -v android debug || true \
+            # Auto-confirm the root warning prompt and run buildozer
+            yes y | buildozer -v android debug \
           "
 
       - name: List build output (for debugging)
